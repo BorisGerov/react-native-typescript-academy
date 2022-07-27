@@ -1,0 +1,12 @@
+{
+  "name": "03-es6-features-lab",
+  "version": "1.0.0",
+  "description": "ECMAScript 6+ novelties demo",
+  "main": "index.js",
+  "repository": "https://github.com/BorisGerov/react-native-typescript-academy.git",
+  "author": "Boris Gerov",
+  "license": "MIT",
+  "devDependencies": {
+    "lite-server": "^2.6.1"
+  }
+}
