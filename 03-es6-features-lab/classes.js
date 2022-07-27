@@ -12,9 +12,14 @@ class Person {
         this.lName = lName; 
         this.address = address;
     }
-    toString() {
-        return `ID: ${this.id}, Name: ${this.fName + ' ' + this.lName}, Address: ${this.address}`;
+    
+    #getFullName(){
+        return  `${this.fName} ${this.lName}`;
     }
+    toString() {
+        return `ID: ${this.id}, Name: ${this.#getFullName()}, Address: ${this.address}`;
+    }
+
 }
 class User extends Person {
     constructor(fName, lName, address, username, password, role = READER ){
@@ -27,6 +32,24 @@ class User extends Person {
         return `${super.toString()} , Username: ${this.username}, Password: ${this.password}, Role: ${Role[this.role]} `;
     }
 }
+const changePassword = function(newPassword){
+    this.password = newPassword;
+}
+const SUPER_ADMIN = {
+    __proto__: User.prototype,
+    id: 0,
+    fName: 'Default',
+    lName: 'Admin',
+    address: 'BG',
+    username: 'admin',
+    password: 'admin',
+    role: ADMIN,
+    toString() {
+        return `SUPERUSER: ${super.toString()}`;
+    },
+    changePassword 
+}
+
 
     const p1 = new Person('John', 'Doe', 'London');
     const p2 = new Person('Jane', 'Doe', 'New York');
@@ -37,5 +60,9 @@ class User extends Person {
 
     const people = [p1, p2, u1, u2, u3];
     people.forEach(p => console.log(p.toString()));
+
+    console.log(SUPER_ADMIN.toString());
+    SUPER_ADMIN.changePassword('admin123');
+    console.log(SUPER_ADMIN.toString())
 
     
