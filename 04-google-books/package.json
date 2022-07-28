@@ -1,0 +1,15 @@
+{
+  "name": "04-google-books",
+  "version": "1.0.0",
+  "description": "Google Books",
+  "main": "index.js",
+  "repository": "https://github.com/BorisGerov/react-native-typescript-academy.git",
+  "author": "Boris Gerov",
+  "license": "MIT",
+  "scripts": {
+    "start": "lite-server"
+  },
+  "devDependencies": {
+    "lite-server": "^2.6.1"
+  }
+}
