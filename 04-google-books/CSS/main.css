@@ -4,6 +4,7 @@ body * {
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
 }
 
 h2 {
@@ -14,27 +15,32 @@ h2 {
 }
 
 header {
-    background-color: gray;
+    /* background-color: gray; */
+    /* background-image: url('https://i0.wp.com/fromthegreennotebook.com/wp-content/uploads/2021/05/Commander-Reading-List-1.jpg?ssl=1');
+    background-repeat: no-repeat;
+    background-size: 100%; */
+    background-image: linear-gradient(rgb(173, 243, 202), rgb(9, 141, 146));
     padding: 60px;
     font-size: 35px;
     text-align: center;
 }
 
 .firstNav {
-    background-color: rgb(164, 164, 164);
-    padding: 10px 10px;
+    /* background-color: rgb(164, 164, 164); */
+    background-image: linear-gradient(rgb(9, 141, 146),rgb(173, 243, 202));
+    padding: 20px 20px;
     overflow: hidden;
     display: flex;
+    justify-content: space-between;
     flex-flow: row nowrap;
 }
 
 .firstNav a {
-    display: block;
-    float:left;
     color: black;
     text-align: center;
     padding: 14px 16px;
     text-decoration: none;
+    
 }
 
 .firstNav a:hover {
@@ -43,12 +49,18 @@ header {
 }
 
 .leftSec {
-    float: left;
+    /* float: left; */
+    display: block;
+    justify-content: flex-start;
+    
 }
 
 .rightArt { 
-    float: right;
+    /* float: right; */
     padding: 20% 10%;
+    display: flex;
+    flex-flow: row wrap;
+    flex: 30%;
 }
 
 main {
@@ -56,9 +68,9 @@ main {
     margin: 4%;
     column-count: 3;
     display: flex;
-    flex: 70%;
     flex-direction: row;
     flex-wrap: wrap;
+    gap:5%;
 }
 
 .row {
@@ -97,6 +109,10 @@ main {
 
   .text {
     flex: 100%;
+    justify-content: flex-end;
+    padding-right: 25px;
+    padding-top: 25px;
+    padding-bottom: 25px;
   }
 
   .container {
@@ -105,29 +121,24 @@ main {
     padding: 20px 20px;
   }
 
-  aside {
+  /* aside {
     flex: 20%;
     padding: 10px 20px;
     margin-top: 60px;
-  }
+  } */
 
   .navContainer {
     justify-content: flex-end;
     display: flex;
+    /* padding: 5px; */
+    
   }
 
   #rightInput {
-
-
-  }
-
-  aside img {
     height: auto;
-    max-width: 40%;
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
+    width: 100%;
   }
+
   .images {
     max-width: 80%;
     display: flex;
@@ -137,30 +148,47 @@ main {
     margin-left: auto;
     margin-right: auto;
   }
+  article { 
+    display: flex;
+    flex-flow: row nowrap;
+    width: 30%;
+    margin-bottom: 5%;
+    border: 1px solid black;
+    border-radius:15px;
+  }
 
   @media(max-width: 1000px) {
-    .main {
-        flex: 50%;
+    article {
+        width: 50%;
             
     }
-    #aside {
+    /* #aside {
         flex: 50%;
+    } */
+    .container{
+        flex: 50%;
+    }
+  }
+  @media(min-width: 1550px) {
+    article {
+        width: 30%;
+            
     }
     .container{
         flex: 50%;
     }
   }
-
   @media (max-width: 600px) {
-    .main {
+    article {
         flex: 100%;
             
     }
-    #aside {
+    /* #aside {
         flex: 100%;
-    }
+    } */
     .container{
         flex: 100%;
     }
 }
+
 

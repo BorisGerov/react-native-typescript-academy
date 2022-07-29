@@ -7,21 +7,23 @@
     <title>Blog Post</title>
     <link rel="stylesheet" href="CSS/main.css" />
     <script src="google-books.js" defer></script>
+    <script src="https://kit.fontawesome.com/19ea78e580.js" crossorigin="anonymous"></script>
     <!-- <script src="google-books-text.js" defer></script> -->
   </head>
   <body>
     <header>
-      <h2>Blog Post</h2>
+      <h2>Google Books</h2>
     </header>
     <nav class="firstNav">
-      <a href="#main">Link</a>
-      <a href="#aside">Link</a>
-      <a href="#footer">Link</a>
-      <div class="navContainer">
-        <input type="text" id="rightInput">
-        <button >Search</button>
+      <div class="navLinks">
+        <a href="#main">Main</a>
+        <!-- <a href="#aside"></a> -->
+        <a href="#footer">Footer</a>
       </div>
-      
+      <form class="navContainer">
+        <input type="text" id="rightInput" placeholder="Search"/>
+        <button type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
+      </form>
     </nav>
 
     <!-- <div id="results"></div> -->
@@ -155,7 +157,7 @@
     </div>
 
     <footer id="footer">
-      <p>Copyright &copy; Blog Post</p>
+      <p>Copyright &copy; Google Books</p>
       <a href="#">borisgerov@gmail.com</a>
     </footer>
   </body>
