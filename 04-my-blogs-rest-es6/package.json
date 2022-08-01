@@ -1,0 +1,17 @@
+{
+  "name": "04-my-blogs-rest-es6",
+  "version": "1.0.0",
+  "description": "Rest, HTTP, json-server with ES\\6 + web client demo",
+  "main": "index.js",
+  "repository": "https://github.com/BorisGerov/react-native-typescript-academy.git",
+  "author": "Boris Gerov",
+  "license": "Apache-2.0",
+  "scripts": {
+    "api": "json-server db.json --routes routes.json",
+    "start": "lite-server"
+  },
+  "devDependencies": {
+    "json-server": "^0.17.0",
+    "lite-server": "^2.6.1"
+  }
+}

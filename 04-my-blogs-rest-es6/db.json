@@ -1,0 +1,142 @@
+{
+  "posts": [
+    {
+      "id": 1,
+      "title": "json-server",
+      "content": "JSON Server is easy ...",
+      "tags": [
+        "json-server",
+        "rest",
+        "api"
+      ],
+      "imageUrl": "https://assets-global.website-files.com/5aa7081220a301f2a3644f3b/5f493b167e5dc864a0265b30_json-logo.png",
+      "authorId": 1
+    },
+    {
+      "id": 1,
+      "title": "json-server",
+      "content": "JSON Server is easy ...",
+      "tags": [
+        "json-server",
+        "rest",
+        "api"
+      ],
+      "imageUrl": "https://assets-global.website-files.com/5aa7081220a301f2a3644f3b/5f493b167e5dc864a0265b30_json-logo.png",
+      "authorId": 1
+    },
+    {
+      "title": "json-server",
+      "content": "JSON Server is easy ...",
+      "tags": [
+        "json-server",
+        "rest",
+        "api"
+      ],
+      "imageUrl": "https://humao.gallerycdn.vsassets.io/extensions/humao/rest-client/0.25.0/1655829100763/Microsoft.VisualStudio.Services.Icons.Default",
+      "authorId": 1,
+      "id": 2
+    },
+    {
+      "title": "Using Rest Client",
+      "content": "Rest client is easy ...",
+      "tags": [
+        "rest-client",
+        "rest",
+        "http",
+        "crud"
+      ],
+      "imageUrl": "https://humao.gallerycdn.vsassets.io/extensions/humao/rest-client/0.25.0/1655829100763/Microsoft.VisualStudio.Services.Icons.Default",
+      "authorId": 1,
+      "id": 3
+    },
+    {
+      "0": {
+        "id": 1,
+        "title": "json-server",
+        "content": "JSON Server is easy ...",
+        "tags": [
+          "json-server",
+          "rest",
+          "api"
+        ],
+        "imageUrl": "https://assets-global.website-files.com/5aa7081220a301f2a3644f3b/5f493b167e5dc864a0265b30_json-logo.png",
+        "authorId": 1
+      },
+      "1": {
+        "id": 1,
+        "title": "json-server",
+        "content": "JSON Server is easy ...",
+        "tags": [
+          "json-server",
+          "rest",
+          "api"
+        ],
+        "imageUrl": "https://assets-global.website-files.com/5aa7081220a301f2a3644f3b/5f493b167e5dc864a0265b30_json-logo.png",
+        "authorId": 1
+      },
+      "2": {
+        "title": "json-server",
+        "content": "JSON Server is easy ...",
+        "tags": [
+          "json-server",
+          "rest",
+          "api"
+        ],
+        "imageUrl": "https://humao.gallerycdn.vsassets.io/extensions/humao/rest-client/0.25.0/1655829100763/Microsoft.VisualStudio.Services.Icons.Default",
+        "authorId": 1,
+        "id": 2
+      },
+      "3": {
+        "title": "Using Rest Client",
+        "content": "Rest client is easy ...",
+        "tags": [
+          "rest-client",
+          "rest",
+          "http",
+          "crud"
+        ],
+        "imageUrl": "https://humao.gallerycdn.vsassets.io/extensions/humao/rest-client/0.25.0/1655829100763/Microsoft.VisualStudio.Services.Icons.Default",
+        "authorId": 1,
+        "id": 3
+      },
+      "id": 4
+    },
+    {
+      "title": "title",
+      "authorId": "1",
+      "content": "1asddasfasdasd",
+      "imageUrl": "https://static.remove.bg/remove-bg-web/bf3af3e882eb04971b4492a1015ef7e77df29362/assets/start_remove-c851bdf8d3127a24e2d137a55b1b427378cd17385b01aec6e59d5d4b5f39d2ec.png",
+      "tags": [
+        "blog1",
+        "blog2",
+        "blog3"
+      ],
+      "id": 5
+    },
+    {
+      "title": "title",
+      "authorId": "1",
+      "content": "1asddasfasdasd",
+      "imageUrl": "https://static.remove.bg/remove-bg-web/bf3af3e882eb04971b4492a1015ef7e77df29362/assets/start_remove-c851bdf8d3127a24e2d137a55b1b427378cd17385b01aec6e59d5d4b5f39d2ec.png",
+      "tags": [],
+      "id": 6
+    }
+  ],
+  "comments": [
+    {
+      "id": 1,
+      "body": "some comment",
+      "postId": 1
+    }
+  ],
+  "profile": [
+    {
+      "id": 1,
+      "firstName": "John",
+      "lastName": "Smith",
+      "username": "john",
+      "password": "john123",
+      "role": "ADMIN"
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+GET http://localhost:3000/api/posts HTTP/1.1
+
+###
+
+GET http://localhost:3000/api/posts HTTP/1.1
+
+###
+
+POST http://localhost:3000/api/posts HTTP/1.1
+content-type: application/json
+
+{
+    "title": "Using Rest Client",
+    "content": "Rest client is easy ...",
+    "tags": [
+        "rest-client",
+        "rest",
+        "http",
+        "crud"
+    ],
+    "imageUrl": "https://humao.gallerycdn.vsassets.io/extensions/humao/rest-client/0.25.0/1655829100763/Microsoft.VisualStudio.Services.Icons.Default",
+    "authorId": 1
+}
+
+###
+POST http://localhost:3000/api/posts HTTP/1.1
+content-type: application/json
+
+{
+    "id": 3,
+    "title": "Rest Client",
+    "content": "Rest client is relatively easy ...",
+    "tags": [
+        "rest-client",
+        "rest",
+        "http",
+        "easy"
+    ],
+    "imageUrl": "https://humao.gallerycdn.vsassets.io/extensions/humao/rest-client/0.25.0/1655829100763/Microsoft.VisualStudio.Services.Icons.Default",
+    "authorId": 1
+}
+
+###
+
+DELETE http://localhost:3000/api/posts HTTP/1.1
