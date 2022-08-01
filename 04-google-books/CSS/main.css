@@ -15,10 +15,7 @@ h2 {
 }
 
 header {
-    /* background-color: gray; */
-    background-image: url('https://i0.wp.com/fromthegreennotebook.com/wp-content/uploads/2021/05/Commander-Reading-List-1.jpg?ssl=1');
-    background-repeat: no-repeat;
-    background-attachment: fixed;
+    background-color: rgb(126, 184, 197);
     background-size: 100%;
     padding: 60px;
     font-size: 35px;
@@ -26,7 +23,7 @@ header {
 }
 
 .firstNav {
-    background-color: rgb(164, 164, 164);
+    background-color: rgb(151, 189, 197);
     padding: 20px 20px;
     overflow: hidden;
     display: flex;
@@ -78,6 +75,7 @@ main {
     row-gap: 10px;
     flex-direction: row;
     flex-wrap: wrap;
+    background-color: rgb(198, 223, 228);
   }
   
   /* Clear floats after the columns */
@@ -89,7 +87,7 @@ main {
 
   footer {
     text-align: left;
-    background-color: gray;
+    background-color: rgb(126, 184, 197);
     color: black;
     font-size: 15px;
     padding: 15px 20px;
