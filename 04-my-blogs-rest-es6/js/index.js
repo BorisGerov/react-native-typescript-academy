@@ -1,11 +1,15 @@
-import { addNewPost, getAllPosts } from './blogs-api-client.js';
-import { chipsInstances } from './materialize-helpers.js';
+import { addNewPost, getAllPosts, deletePosts} from "./blogs-api-client.js";
+import { chipsInstances } from "./materialize-helpers.js";
 
 const postsSection = document.getElementById("posts");
 const erorrsDiv = document.getElementById("errors");
 const addPostForm = document.getElementById("add-post-form");
-addPostForm.addEventListener('submit', handleSubmitPost);
-addPostForm.addEventListener('reset', resetForm);
+// const editPostForm = document.getElementById("edit-post-form").value;
+// editPostForm.addEventListener("edit", handleEditPost);
+addPostForm.addEventListener("submit", handleSubmitPost);
+addPostForm.addEventListener("reset", resetForm);
+
+
 
 async function init() {
   try {
@@ -17,18 +21,16 @@ async function init() {
 }
 
 export function showPosts(posts) {
-  posts.forEach(post => addPost(post));
+  posts.forEach((post) => addPost(post));
 }
 
 export function showError(err) {
   erorrsDiv.innerHTML = `<div>${err}</div>`;
 }
 
-
-
 export function addPost(post) {
-  const postElem = document.createElement('article');
-  postElem.setAttribute('id', post.id);
+  const postElem = document.createElement("article");
+  postElem.setAttribute("id", post.id);
   postElem.className = "col s12 m6 l4";
   postElem.innerHTML = `
     <div class="card">
@@ -36,11 +38,17 @@ export function addPost(post) {
       <img class="activator" src="${post.imageUrl}">
     </div>
     <div class="card-content">
-      <span class="card-title activator grey-text text-darken-4">${post.title}<i class="material-icons right">more_vert</i></span>
-      <p>Author: ${post.authorId}, Tags: ${post.tags ? post.tags.join(', ') : 'no tags'}</p>
+      <span class="card-title activator grey-text text-darken-4">${
+        post.title
+      }<i class="material-icons right">more_vert</i></span>
+      <p>Author: ${post.authorId}, Tags: ${
+    post.tags ? post.tags.join(", ") : "no tags"
+  }</p>
     </div>
     <div class="card-reveal">
-      <span class="card-title grey-text text-darken-4">${post.title}<i class="material-icons right">close</i></span>
+      <span class="card-title grey-text text-darken-4">${
+        post.title
+      }<i class="material-icons right">close</i></span>
       <p>${post.content}</p>
     </div>
     <div class="card-action">
@@ -54,8 +62,21 @@ export function addPost(post) {
     </div>
     `;
   postsSection.insertAdjacentElement("beforeend", postElem);
-  postElem.querySelector('#delete').addEventListener('click', event => deletePost(post.id))
+  postElem
+    .querySelector("#delete")
+    .addEventListener("click", (event) => deletePost(post.id))
+    // .addEventListener("clicl", (event) => editPost(post.id))
+    ;
 }
+
+// async function handleEditPost(editEvent) {
+//   try {
+//     editEvent.preventDefault();
+    
+//   } catch(err) {
+//     showError(err);
+//   }
+// }
 
 async function handleSubmitPost(event) {
   try {
@@ -65,8 +86,8 @@ async function handleSubmitPost(event) {
     for (const entry of formData.entries()) {
       newPost[entry[0]] = entry[1];
     }
-    const tags = chipsInstances[0].chipsData.map(chips => chips.tag);
-    newPost['tags'] = tags;
+    const tags = chipsInstances[0].chipsData.map((chips) => chips.tag);
+    newPost["tags"] = tags;
     const created = await addNewPost(newPost);
     addPost(created);
     resetForm();
@@ -78,55 +99,28 @@ async function handleSubmitPost(event) {
 export function resetForm() {
   addPostForm.reset();
   const instance = chipsInstances[0];
-  while(instance.chipsData.length > 0) {
+  while (instance.chipsData.length > 0) {
     instance.deleteChip(0);
   }
 }
 
-export function deletePost(postId) {
-  const del = document.getElementById(postId);
-  del.remove();
-  deletePost(del);
-
+async function deletePost(id) {
+  try {
+    deletePosts(id);
+    document.getElementById(id).remove();
+  } catch (err) {
+    showError(err);
+  }
 }
 
-
-
-// function myFunction() {
-  
-//   var input = document.querySelector('.card')[0].value;
-//   var agenum = document.getElementsByTagName('input')[1].value;
-//   var div = document.createElement('div');
-//   div.style.border = '2px solid red';
-//   div.style.padding = '10px';
-//   div.style.display = 'block';
-//   document.body.appendChild(div);
-
-//   var output = 'Name: ' + input + '<br/>' + 'Age: ' + agenum;
-//   div.innerHTML = output;
-  
-//   //create your delete button after you click try it
-//   var del = document.createElement('button');
-//   del.style.textDecoration = 'none';
-//   del.innerHTML = 'Remove this person?';
-//   del.style.color = 'white';
-//   del.style.backgroundColor = 'blue';
-//   //assign a function for it when clicked
-//   del.onclick = function() { deleteButton(div,this)}; 
-//   document.body.appendChild(del);
-//   deleteButton(div);
+// async function editPost(pId) {
+//   try {
+//     editPosts(pId);
+//     document.getElementById(pId).contentEditable(true);
+//   } catch (err) {
+//     showError(err);
+//   }
 // }
+ 
 
-// function deleteButton(x,y) {
-  
-//   var parent = document.getElementsByTagName("BODY")[0];
-//   //remove the div
-//   parent.removeChild(x);
-//   //remore the button
-//   parent.removeChild(y);
-  
-// }
-
-
-
-init()
+init();
