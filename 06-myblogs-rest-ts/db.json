@@ -59,6 +59,18 @@
       "imageUrl": "https://www.publicdomainpictures.net/pictures/40000/velka/robin-bird.jpg",
       "authorId": 1,
       "id": 24
+    },
+    {
+      "title": "Title",
+      "content": "asdhahfahsda",
+      "tags": [
+        "asd",
+        "adsadaf",
+        "asfsafss"
+      ],
+      "imageUrl": "https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg",
+      "authorId": 2,
+      "id": 25
     }
   ],
   "comments": [

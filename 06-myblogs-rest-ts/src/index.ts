@@ -1,8 +1,8 @@
-import { ValidationConfig, ValidationResult } from './validate';
+import { Change, FormFieldState, Status, ValidationConfig, ValidationResult } from './validate';
 import { AppStateStore } from './state-store.js';
 import { BlogsAPI } from './blogs-api-client.js';
 import { Post } from './posts.js';
-import { IdType } from './shared-types.js';
+import { formFieldDict, IdType } from './shared-types.js';
 
 
 // interface BlogControllerType {
@@ -32,14 +32,31 @@ class BlogsController {
     } catch (err) {
       this.showError(err);
     }
+
+    // initFormState();
   }
 
+  // initFormState(formElement: HTMLFormElement): Forms {
+  //   const formData = new FormData(formElement);
+  //   const np: formFieldDict<FormFieldState> = {};
+  //   formData.forEach((value, key) => {
+  //     np[key] = new FormFieldState(Status.INVALID, Change.PRISTINE);
+  //   })
+  // }
+  
   showPosts(posts: Post[]) {
     posts.forEach(post => this.addPostDOM(post));
   }
 
+  // showError(err: any) {
+  //   this.erorrsDiv.innerHTML = `<div>${err}</div>`;
+  // }
   showError(err: any) {
-    this.erorrsDiv.innerHTML = `<div>${err}</div>`;
+    if(!err) {
+      this.erorrsDiv.innerHTML = ''
+    } else {
+      this.erorrsDiv.innerHTML = `<div>${err}</div>`;
+    }
   }
 
   addPostDOM(post: Post) {
@@ -122,14 +139,11 @@ class BlogsController {
 
   getPostFormSnapshot(): Post {
     const formData = new FormData(this.addPostForm);
-    type PostDict = {
-      [key: string]: string
-    };
-    const np: PostDict = {};
+    const np: formFieldDict<string> = {};
     formData.forEach((value, key) => {
       np[key] = value.toString();
     })
-    return new Post(np.title, np.content, np.tags.split(/\W+/), np.imageUrl, parseInt(np.authorId) || 1, parseInt(np.id));
+    return new Post(np.title, np.content, np.tags.split(/\W+/), np.imageUrl,  parseInt(np.authorId) || 0, parseInt(np.id));
   }
 
   resetForm = () => {
@@ -158,7 +172,22 @@ class BlogsController {
       const validator = config[field];
       if(validator !== undefined) {
         try{
-          validator(formSnapshot[field]!.toString(), field);
+          if(Array.isArray(validator)) {
+            for(const correct of validator) {
+              try {
+                correct(formSnapshot[field]!.toString(), field);
+              } catch(err){
+                if(validationResult[field] === undefined) {
+                  validationResult[field] = [] as Array<string>;
+                }
+                validationResult[field]!.push(err as string);
+              }
+             
+            }
+          }
+          else {
+            validator(formSnapshot[field]!.toString(), field);
+          }
         } catch(err) {
           validationResult[field] = [err as string];
         }
@@ -178,9 +207,10 @@ class BlogsController {
         }
       }
     }
-    this.showError(AppStateStore.postFormErrors);
+    this.showError(AppStateStore.postFormErrors.join(""));
   }
 }
+
 
 const blogsController = new BlogsController();
 

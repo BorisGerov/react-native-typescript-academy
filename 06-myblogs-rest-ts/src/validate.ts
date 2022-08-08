@@ -1,7 +1,7 @@
 import { Post } from "./posts";
 
 export type ValidationConfig<T> = {
-    [P in keyof T]?: Validator //| Validator[]
+    [P in keyof T]?: Validator | Validator[]
 }
 
 export type ValidationResult<T> = {
@@ -9,7 +9,30 @@ export type ValidationResult<T> = {
 }
 
 
+export type FormState<T> = { 
+    [P in keyof T]?: FormFieldState
+}
+
+export class FormFieldState  {
+    constructor (
+        public valid: Status,
+        public changed: Change
+    ){}
+    
+}
+
+export enum Status {
+    VALID,
+    INVALID
+}
+
+export enum Change {
+    PRISTINE,
+    DIRTY
+}
+
 export type Validator = (value: string, field: string) => void;
+
 
 export type ValidatorFactory = (...args: any) => Validator
 
@@ -26,11 +49,11 @@ export class Validators {
         }
     }
     static pattern: ValidatorFactory = (validationPattern: RegExp) => (value: string, field: string) => {
-        if(!validationPattern.test(value)) {
+        if(!value.match(validationPattern)) {
             throw `The field '${field}' does not match pattern '${validationPattern}'`
         }
     }
-    static len: ValidatorFactory = (min: number, max: number) => (value: string, field: string) => {
+    static len: ValidatorFactory = (min: number = 0, max: number = 20) => (value: string, field: string) => {
         if(value.length < min) {
             throw `The field '${field}' should be at least ${min} characters long`
         } else if (value.length > max) {
