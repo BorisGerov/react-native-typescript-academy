@@ -1,27 +1,27 @@
-import { Post, PostCreateDto } from "./posts.js";
+import { User } from "./users.js";
 import { IdType } from "./shared-types.js";
 
 const API_BASE_URL = "http://localhost:4000/api/posts";
 
 export interface BlogsApiClient {
-    getAllPosts(): Promise<Post[]>;
-    getPostById(id: IdType): Promise<Post>;
-    addNewPost(post: PostCreateDto): Promise<Post>;
-    updatePost(post: Post): Promise<Post>;
-    deletePostById(id: IdType): Promise<Post>;
+    getAllPosts(): Promise<User[]>;
+    getPostById(id: IdType): Promise<User>;
+    addNewPost(post: PostCreateDto): Promise<User>;
+    updatePost(post: User): Promise<User>;
+    deletePostById(id: IdType): Promise<User>;
 }
 
 class BlogApiClientImpl implements BlogsApiClient {
 
-    async getAllPosts(): Promise<Post[]> {
+    async getAllPosts(): Promise<User[]> {
         return this.handleRequest(API_BASE_URL);
     }
 
-    async getPostById(id: number): Promise<Post> {
+    async getPostById(id: number): Promise<User> {
         return this.handleRequest(`${API_BASE_URL}/${id}`);
     }
 
-    async addNewPost(post: PostCreateDto): Promise<Post> {
+    async addNewPost(post: PostCreateDto): Promise<User> {
         return this.handleRequest(API_BASE_URL, {
             method: 'POST',
             headers: {
@@ -31,7 +31,7 @@ class BlogApiClientImpl implements BlogsApiClient {
         });
     }
 
-    async updatePost(post: Post): Promise<Post> {
+    async updatePost(post: User): Promise<User> {
         return this.handleRequest(`${API_BASE_URL}/${post.id}`, {
             method: 'PUT',
             headers: {
@@ -41,7 +41,7 @@ class BlogApiClientImpl implements BlogsApiClient {
         });
     }
 
-    async deletePostById(id: number): Promise<Post> {
+    async deletePostById(id: number): Promise<User> {
         return this.handleRequest(`${API_BASE_URL}/${id}`, {
             method: 'DELETE'
         });

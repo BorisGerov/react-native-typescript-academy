@@ -163,16 +163,32 @@ function registerPage() {
                   <input id="username" name="username" type="text" class="validate" required>
                   <label for="username">Username</label>
               </div>
-              
               <div class="input-field col s6">
                   <input id="password" name="password" type="password" class="validate" required>
                   <label for="password">Password</label>
               </div>        
               <div class="input-field col s6">
-                  <input id="gender" name="gender" type="text" class="validate" required>
-                  <label for="gender">What's your gender ... ?</label>
+                <form action="#">
+                  <p>
+                    <label>
+                      <input name="group1" type="radio" />
+                      <span>Female</span>
+                    </label>
+                  </p>
+                  <p>
+                    <label>
+                      <input name="group1" type="radio" />
+                      <span>Male</span>
+                    </label>
+                  </p>
+                  <p>
+                    <label>
+                      <input name="group1" type="radio" />
+                      <span>Other</span>
+                    </label>
+                  </p>
+                  
               </div>
-             
               <div class="input-field col s12">
                   <input id="imageUrl" name="imageUrl" type="url" class="validate" optional>
                   <label for="imageUrl">User Image URL</label>
