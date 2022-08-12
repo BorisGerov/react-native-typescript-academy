@@ -1,0 +1,4 @@
+.UserList {
+    display: flex;
+    flex-direction: column;
+}
