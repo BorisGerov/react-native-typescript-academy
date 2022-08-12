@@ -7,6 +7,7 @@ import UserList from './TodoList';
 import UserInput from './TodoInput';
 import { stat } from 'fs';
 import UserFilter from './TodoFilter';
+import { UsersAPI } from './rest-api-client';
 
 
 export type FilterType = UserStatus | undefined;
@@ -15,6 +16,8 @@ interface UserAppState {
   users: User[];
   filter: FilterType;
 }
+
+
 
 export interface UserListener {
   (user: User): void;
@@ -33,6 +36,14 @@ class UserApp extends Component<{}, UserAppState> {
   constructor(props: {}) {
     super(props)
     this.handleUpdateUser = this.handleUpdateUser.bind(this);
+  }
+  async componentDidMount() {
+    try {
+        const allUserss = await UsersAPI.findAll();
+        this.setState({users: allUserss});
+    } catch(err) {
+        // this.setState({errors: (err as any).toString()})
+    }
   }
 
   handleUpdateUser(user: User) {

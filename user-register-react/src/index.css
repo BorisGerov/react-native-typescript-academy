@@ -119,3 +119,17 @@ form {
   background-color: #555555;
   color: white;
 }
+
+img {
+  height: 100%;
+  width: 100%;
+  align-self: center;
+  justify-content: center;
+}
+.outerDiv {
+  align-self: center;
+  justify-content: center;
+  padding: 20px;
+  height:300px;
+  width: 300px;
+}

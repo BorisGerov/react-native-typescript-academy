@@ -90,8 +90,13 @@ class UserInput extends Component<UserInputProps, UserInputState> {
                 <input type="Url" id="TodoInput-user-text-url" name="url" value={this.state.url}
                     onChange={this.handleTextChanged} placeholder="https://example.jpg/.png/.jpeg"/>
                 <label htmlFor="UserInput-user-text">Gender</label>
-                <input type="text" id="UserInput-user-text-gender" name="gender" value={this.state.gender}
-                    onChange={this.handleTextChanged} placeholder="Male / Female / Other"/>
+                <select className='UserFilter'>
+                    <option value="0">Gender</option>
+                    <option value={UserStatus.Active}>Male</option>
+                    <option value={UserStatus.Suspended}>Female</option>
+                    <option value={UserStatus.Deactivated}>Other</option>
+                </select>
+                
                 <button className='button button5' type="submit">Submit User</button>
                 <button className='button button3' type="reset" onClick={this.handleUserReset}>Reset</button>
             </form>

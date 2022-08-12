@@ -21,7 +21,10 @@ export const UserItem = ({ user,onUpdate, onDelete }: UserItemProps) => {
             <span className="UserItem-text">
                 <span className="UserItem-id">{user.id}</span>
                 {user.firstName} {user.lastName} - {user.username} - {user.gender}
-                <img src={user.url} alt="Profile picture" /> 
+                <div className='outerDiv'>
+                    <img src={user.url} alt="Profile picture" /> 
+                </div>
+                
             </span>
             <span className="UserItem-right">
                 <span className="UserItem-status">{UserStatus[user.status]}</span>
