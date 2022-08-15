@@ -1,11 +1,13 @@
 import { stat } from 'fs';
 import React, { Component } from 'react';
 import { string } from 'yargs';
+import { Optional } from './shared-types';
 import { User, UserStatus } from './todo.model';
 import { UserListener } from './TodoApp';
 import './TodoInput.css';
 
 interface UserInputProps {
+    user: Optional<User>
     onCreateTodo: UserListener
 }
 
@@ -92,9 +94,9 @@ class UserInput extends Component<UserInputProps, UserInputState> {
                 <label htmlFor="UserInput-user-text">Gender</label>
                 <select className='UserFilter'>
                     <option value="0">Gender</option>
-                    <option value={UserStatus.Active}>Male</option>
-                    <option value={UserStatus.Suspended}>Female</option>
-                    <option value={UserStatus.Deactivated}>Other</option>
+                    <option>Male</option>
+                    <option>Female</option>
+                    <option>Other</option>
                 </select>
                 
                 <button className='button button5' type="submit">Submit User</button>

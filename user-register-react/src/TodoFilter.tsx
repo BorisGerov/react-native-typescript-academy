@@ -16,8 +16,8 @@ export default function UserFilter({filter, onFilterChange}: UserFilterProps) {
         <select value={filter} onChange={handleFilterChange} className='UserFilter'>
             <option value="0">ALL</option>
             <option value={UserStatus.Active}>Active</option>
-            <option value={UserStatus.Suspended}>Suspended</option>
-            <option value={UserStatus.Deactivated}>Deactivated</option>
+            <option value={UserStatus.Completed}>Completed</option>
+            <option value={UserStatus.Canceled}>Canceled</option>
         </select>
     );
 } 

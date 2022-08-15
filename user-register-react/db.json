@@ -1,5 +1,4 @@
 {
-
   "posts": [
     {
       "title": "json-server",
@@ -89,6 +88,17 @@
       "username": "john",
       "password": "john123",
       "role": "ADMIN"
+    },
+    {
+      "firstName": "asdad",
+      "lastName": "asdadas",
+      "username": "sadad",
+      "password": "sadadsad",
+      "comfirmPassword": "saddasda",
+      "gender": "",
+      "status": 1,
+      "url": "https://static.remove.bg/remove-bg-web/b873fb3846d2c3ac1a6c3f89e442a23ac724b440/assets/start_remove-c851bdf8d3127a24e2d137a55b1b427378cd17385b01aec6e59d5d4b5f39d2ec.png",
+      "id": 2
     }
   ]
 }

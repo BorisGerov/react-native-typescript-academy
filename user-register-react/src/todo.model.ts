@@ -1,12 +1,13 @@
 import { string } from "yargs";
+import { IdType } from "./shared-types";
 
 export enum UserStatus {
-    Active = 1, Suspended, Deactivated
+    Active = 1, Completed, Canceled
 }
 
 export class User {
-    static nextId = 0;
-    id = ++User.nextId;
+    // static nextId = 0;
+    // id = ++User.nextId;
     constructor(
         public firstName: string,
         public lastName: string,
@@ -14,7 +15,8 @@ export class User {
         public password: string,
         public comfirmPassword: string,
         public gender: string,
-        public status: UserStatus.Active,
+        public status: UserStatus =  UserStatus.Active,
         public url: string,
+        public id: IdType = undefined
     ) {}
 }
