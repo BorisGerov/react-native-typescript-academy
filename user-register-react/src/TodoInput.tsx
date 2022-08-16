@@ -17,7 +17,7 @@ interface UserInputState {
   username: string;
   password: string;
   comfirmPassword: string;
-  gender: UserGender | undefined;
+  gender: string;
   status: UserStatus;
   url: string;
 }
@@ -29,15 +29,14 @@ class UserInput extends Component<UserInputProps, UserInputState> {
     username: "",
     password: "",
     comfirmPassword: "",
-    gender: undefined,
+    gender: '',
     status: UserStatus.Active,
     url: "",
   };
   handleUserSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-    if (this.state.gender === undefined) {
-      alert("Gender cannot be undefined");
-    } else {
+    console.log(this.state)
+   
       this.props.onCreateTodo(
         new User(
           this.state.firstName,
@@ -56,11 +55,11 @@ class UserInput extends Component<UserInputProps, UserInputState> {
         username: "",
         password: "",
         comfirmPassword: "",
-        gender: undefined,
+        gender: '',
         status: UserStatus.Active,
         url: "",
       });
-    }
+    
   };
 
   handleTextChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -79,11 +78,18 @@ class UserInput extends Component<UserInputProps, UserInputState> {
       username: "",
       password: "",
       comfirmPassword: "",
-      gender: undefined,
+      gender: '',
       status: UserStatus.Active,
       url: "",
     });
   };
+  handleFilterChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    console.log(event.target.value);
+    //  console.log(this.state);
+    this.setState({gender: event.target.value})
+   
+    
+}
 
   render() {
     return (
@@ -138,11 +144,11 @@ class UserInput extends Component<UserInputProps, UserInputState> {
           placeholder="https://example.jpg/.png/.jpeg"
         />
         <label htmlFor="UserInput-user-text">Gender</label>
-        <select className="UserFilter" id="" name="gender">
+        <select  className='gender' name="gender" onChange={this.handleFilterChange}>
           <option value="0">Gender</option>
-          <option value="male">Male</option>
-          <option value="female">Female</option>
-          <option value="other">Other</option>
+          <option value={UserGender.Male}>Male</option>
+          <option value={UserGender.Female}>Female</option>
+          <option value={UserGender.Other}>Other</option>
         </select>
 
         <button className="button button5" type="submit">
