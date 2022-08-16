@@ -1,5 +1,5 @@
 import React from 'react';
-import { User, UserStatus } from "./todo.model"
+import { User, UserGender, UserStatus } from "./todo.model"
 import { UserListener } from "./TodoApp";
 import './TodoItem.css'
 
@@ -21,7 +21,7 @@ export const UserItem = ({ user,onUpdate, onDelete }: UserItemProps) => {
         <div className="UserItem">
             <span className="UserItem-text">
                 <span className="UserItem-id">{user.id}</span>
-                {user.firstName} {user.lastName} - {user.username} - {user.gender}
+                {user.firstName} {user.lastName} - {user.username} - {UserGender[user.gender]}
                 <div className='outerDiv'>
                     <img src={user.url} alt="Profile picture" /> 
                 </div>
