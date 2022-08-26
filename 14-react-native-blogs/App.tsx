@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { StyleSheet, SafeAreaView, ScrollView, StatusBar } from "react-native";
+import { StyleSheet, SafeAreaView, ScrollView, StatusBar, KeyboardAvoidingView, Platform, FlatList } from "react-native";
 import { BlogsAPI } from "./dao/rest-api-client";
 import { FilterType, Optional } from "./model/shared-types";
 import { Form } from "./components/formbuilder/Form";
@@ -7,7 +7,8 @@ import { Post, PostStatus } from "./model/posts.model";
 import PostList from "./components/PostList";
 import { FormComponentConfigs } from "./components/formbuilder/form-types";
 import IconButton from './components/IconButton';
-import { FormTextComponent } from "./components/formbuilder/FormTextComponent";
+import * as yup from 'yup';
+import PostItem, { ITEM_HEIGHT, PostItemProps } from "./components/PostItem";
 
 export enum Views {
   PostFormView = 1, PostListView
@@ -18,20 +19,11 @@ interface AppState {
   errors: string | undefined;
   posts: Post[];
   filter: FilterType;
-  editedPost: Optional<Post>;
-
+  editedPost: Post;
+  scrollIndex: number;
 }
-
-type PostFormPropToCompKindMapping = {
-  id: 'FormReadonlyTextComponent';
-  title: 'FormTextComponent';
-  content: 'FormTextComponent';
-  tags: 'FormTextComponent';
-  imageUrl: 'FormTextComponent';
-  status: 'FormDropdownComponent';
-  authorId: 'FormTextComponent';
-}
-
+export const EMPTY_IMAGE_DATA = { uri: '', width: 0, height: 0 };
+const EMPTY_POST = new Post('', '', [], EMPTY_IMAGE_DATA, 1);
 
 class App extends Component<{}, AppState> {
   state: AppState = {
@@ -39,8 +31,10 @@ class App extends Component<{}, AppState> {
     errors: '',
     posts: [],
     filter: undefined,
-    editedPost: undefined,
+    editedPost: EMPTY_POST,
+    scrollIndex: 0,
   }
+  postsListRef = React.createRef<FlatList<Post>>()
 
   async componentDidMount() {
     try {
@@ -51,13 +45,23 @@ class App extends Component<{}, AppState> {
     }
   }
 
-  handleUpdateTodo = (post: Post) => {
+  componentDidUpdate(prevProps: Readonly<{}>, prevState: Readonly<AppState>, snapshot?: any): void {
+    if (this.state.activeView === Views.PostListView) {
+      if (Platform.OS === 'web') {
+        // this.postsListRef.current?.scrollToOffset({offset: (this.state.scrollIndex-1) * ITEM_HEIGHT - 1});
+      } else {
+        this.postsListRef.current?.scrollToIndex({ index: this.state.scrollIndex });
+      }
+    }
+  }
+
+  handleUpdatePost = (post: Post) => {
     this.setState(({ posts }) => ({
       posts: posts.map(td => td.id === post.id ? post : td)
     }))
   }
 
-  handleDeleteTodo = async (post: Post) => {
+  handleDeletePost = async (post: Post) => {
     try {
       await BlogsAPI.deleteById(post.id);
       this.setState(({ posts }) => ({
@@ -69,29 +73,48 @@ class App extends Component<{}, AppState> {
     }
   }
 
-  handleCreatePost = async (post: Post) => {
+  handleSubmitPost = async (post: Post) => {
     try {
+      post.tags = post.tags.filter(tag => tag.trim().length > 0)
       if (post.id) { //edit post
         const updated = await BlogsAPI.update(post);
-        this.setState(({ posts }) => ({
-          posts: posts.map(p => p.id === updated.id ? updated : p),
-          errors: undefined,
-          editedPost: undefined
-        }))
+        const scrollIndex = this.state.posts.findIndex(p => p.id === updated.id)
+        this.setState(({ posts }) => {
+          const postsCopy = posts.slice();
+          postsCopy[scrollIndex] = updated;
+          return {
+            posts: postsCopy,
+            scrollIndex,
+          }
+        });
       } else { // create post
         const created = await BlogsAPI.create(post);
+        const scrollIndex = this.state.posts.length;
         this.setState(({ posts }) => ({
           posts: posts.concat(created),
-          errors: undefined
+          scrollIndex,
         }));
       }
+      this.setState({
+        errors: undefined,
+        editedPost: EMPTY_POST,
+        activeView: Views.PostListView,
+      });
     } catch (err) {
       this.setState({ errors: err as string })
     }
   }
 
+  handleFormCancel = () => {
+    this.setState({
+      errors: undefined,
+      editedPost: EMPTY_POST,
+      activeView: Views.PostListView,
+    })
+  }
+
   handleEditTodo = (post: Post) => {
-    this.setState({ editedPost: post });
+    this.setState({ editedPost: post, activeView: Views.PostFormView });
   }
 
   handlefilterChange = (status: FilterType) => {
@@ -108,47 +131,51 @@ class App extends Component<{}, AppState> {
     return (
       <SafeAreaView style={styles.container}>
         <StatusBar backgroundColor="green" />
-        <IconButton size={30} backgroundColor="green" color="white" onPress={this.handleViewChange} name='check-circle' >
-          {this.state.activeView === Views.PostListView ? 'Add New Post' : 'Show All Posts'}
-        </IconButton>
-        {(() => {
-          switch (this.state.activeView) {
-            case Views.PostFormView:
-              return (
-                <ScrollView contentContainerStyle={styles.form}>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          style={styles.keyboarAvoidingView}
+        >
+          <IconButton size={30} backgroundColor="green" color="white" onPress={this.handleViewChange} name='check-circle' >
+            {this.state.activeView === Views.PostListView ? 'Add New Post' : 'Show All Posts'}
+          </IconButton>
+          {(() => {
+            switch (this.state.activeView) {
+              case Views.PostFormView:
+                return (
                   <Form<Post, PostFormPropToCompKindMapping>
                     config={postFormConfig}
                     // initialValue={new Post('Example Post', 'Example content ...', ['example', 'post'], 'https://www.publicdomainpictures.net/pictures/160000/velka/jeune-femme-poste-de-travail.jpg', 1)}
-                    initialValue={new Post('', '', [], '', 1)}
-                    onSubmit={this.handleCreatePost} />
-                </ScrollView>);
-            case Views.PostListView:
-              return (
-                <PostList posts={this.state.posts}
-                  filter={this.state.filter}
-                  onUpdate={this.handleUpdateTodo}
-                  onDelete={this.handleDeleteTodo}
-                  onEdit={this.handleEditTodo}
-                />);
-          }
-        })()}
+                    initialValue={this.state.editedPost}
+                    onSubmit={this.handleSubmitPost}
+                    onCancel={this.handleFormCancel} />);
+              case Views.PostListView:
+                return (
+                  <PostList ref={this.postsListRef} posts={this.state.posts}
+                    filter={this.state.filter}
+                    onDelete={this.handleDeletePost}
+                    onEdit={this.handleEditTodo}
+                    scrollIndex={this.state.scrollIndex}
+                  />);
+            }
+          })()}
+        </KeyboardAvoidingView>
       </SafeAreaView>
     );
-
-    {/* <Text style={styles.header}>TODO Demo</Text>
-          {this.state.errors ? <Text style={styles.errors}>{this.state.errors}</Text>:<></>}
-          <TodoInput key={this.state.editedTodo?.id} todo={this.state.editedTodo} onCreateTodo={this.handleCreateTodo} />
-          <TodoList
-            todos={this.state.todos}
-            filter={this.state.filter}
-            onUpdate={this.handleUpdateTodo}
-            onDelete={this.handleDeleteTodo}
-            onEdit={this.handleEditTodo}
-          /> */}
   }
 }
 
 export default App;
+
+
+type PostFormPropToCompKindMapping = {
+  id: 'FormReadonlyTextComponent';
+  title: 'FormTextComponent';
+  content: 'FormTextComponent';
+  tags: 'FormTextComponent';
+  image: 'FormImageComponent';
+  status: 'FormDropdownComponent';
+  authorId: 'FormTextComponent';
+}
 
 const postFormConfig: FormComponentConfigs<Post, PostFormPropToCompKindMapping> = {
   id: {
@@ -157,16 +184,35 @@ const postFormConfig: FormComponentConfigs<Post, PostFormPropToCompKindMapping> 
   },
   title: {
     label: 'Blog Title',
+    validators: yup.string().min(3).max(40),
   },
   content: {
     label: 'Blog Content',
+    options: {
+      multiline: true,
+    },
+    validators: yup.string().min(40).max(2048),
   },
   tags: {
-  },
-  imageUrl: {
-    label: 'Blog Image URL',
-    options: {
+    convertor: {
+      fromString: (tags: string) => tags.split(/\W+/),
+      toString: (tagsArray: string[]) => tagsArray.toString()
     }
+  },
+  image: {
+    componentKind: 'FormImageComponent',
+    label: 'Blog Image URL',
+    validators: yup.object().shape({
+      uri: yup.string().required().test(
+        'is-url',
+        '${path} is not a valid URL',
+        (value: string | undefined) => !!value && (value.startsWith('data') || yup.string().url().isValidSync(value))
+      ),
+      localUri: yup.string(),
+      format: yup.string().oneOf(['jpeg', 'png', 'webp']),
+      width: yup.number().integer().min(0),
+      height: yup.number().integer().min(0)
+    }),
   },
   status: {
     componentKind: 'FormDropdownComponent',
@@ -180,6 +226,14 @@ const postFormConfig: FormComponentConfigs<Post, PostFormPropToCompKindMapping> 
   },
   authorId: {
     label: 'Author ID',
+    validators: yup.number().integer().positive(),
+    convertor: {
+      fromString: (value: string) => {
+        const num = +value;
+        return isNaN(num) ? 0 : num;
+      },
+      toString: (num: number) => num + ''
+    }
   },
 };
 
@@ -187,6 +241,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     // paddingTop: StatusBar.currentHeight,
+  },
+  keyboarAvoidingView: {
+    flex: 1
   },
   form: {
     flex: 1,

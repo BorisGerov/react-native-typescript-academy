@@ -5,6 +5,13 @@ export type IdType = number | undefined
 
 export type Identifiable<K> = { id: K }
 
+export interface ImageData {
+  uri: string;
+  localUri?: string;
+  format?: string;
+  width?: number;
+  height?: number;
+}
 
 export type FormFieldDict<Value> = {
   [field: string]: Value
@@ -17,7 +24,7 @@ export interface TodoListener {
 }
 
 export interface PostListener {
-  (todo: Post): void;
+  (post: Post): void;
 }
 
 export type FilterType = PostStatus | undefined;

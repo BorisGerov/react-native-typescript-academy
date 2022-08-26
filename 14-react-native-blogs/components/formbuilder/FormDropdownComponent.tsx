@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         alignItems: 'stretch',
         width: '100%',
-        padding: 20,
+        padding: 5,
     },
     label: {
         paddingTop: 15,
@@ -75,9 +75,11 @@ const styles = StyleSheet.create({
     },
     input: {
         fontSize: 20,
-        padding: 5,
-        borderColor: 'red',
+        borderColor: "green",
         borderWidth: 1,
+        borderRadius: 5,
+        marginBottom: 5,
+        padding: 5,
         height: 40,
     },
 });

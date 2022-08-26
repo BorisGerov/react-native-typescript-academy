@@ -3,6 +3,7 @@ import { StyleProp, TextStyle } from 'react-native';
 import { Optional } from '../../model/shared-types.js';
 import { ComponentKinds } from './FormComponent.js';
 import { FormDropdownComponent, FormDropdownComponentOptions } from './FormDropdownComponent.js';
+import { FormImageComponentOptions } from './FormImageComponent.js';
 import { FormTextComponentOptions } from './FormTextComponent.js';
 import { ValidStatus, ChangedStatus, Validator, ValidationResult, ValidationConfig } from './validation/validate.js';
 
@@ -18,14 +19,17 @@ export interface FormComponentConfig<V, CompKind extends ComponentKinds> {
     onChange?: FormComponentListener<V>;
     options?: OptionType<CompKind>;
     valid?: ValidStatus;
-    validators?: Validator | Validator[];
+    validators?: Validator<V> | Validator<V>[];
     convertor?: Convertor<V>;
     multiline?: boolean;
     labelStyles?: StyleProp<TextStyle>;
     inputStyles?: StyleProp<TextStyle>;
 }
 
-export type OptionType<CompKind extends ComponentKinds> = CompKind extends 'FormDropdownComponent' ? FormDropdownComponentOptions : FormTextComponentOptions; 
+export type OptionType<CompKind extends ComponentKinds> = 
+    CompKind extends 'FormDropdownComponent' ? FormDropdownComponentOptions 
+    : CompKind extends 'FormImageComponent' ? FormImageComponentOptions
+    : FormTextComponentOptions; 
 
 export type PropToComponentKindMapping<Entity> = {
     [Prop in keyof Entity]: ComponentKinds
@@ -35,8 +39,11 @@ export type FormComponentConfigs<Entity, FormConfig extends PropToComponentKindM
     [Prop in keyof Entity]: FormComponentConfig<Entity[Prop], FormConfig[Prop]>;
 }
 
-
 export interface FormComponentListener<V> {
     (value: V): void;
+}
+
+export interface FormCancelListener {
+    (): void;
 }
 

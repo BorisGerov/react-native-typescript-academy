@@ -5,7 +5,7 @@ import { OpaqueColorValue, Text, TextStyle } from 'react-native';
 import { IconButtonProps } from 'react-native-paper';
 import { IconProps } from 'react-native-paper/lib/typescript/components/MaterialCommunityIcon';
 
-type IconType = "link" | "search" | "image" | "header" | "code" | "map" | "table" | "th" | "circle" | "filter" | "stop" | 
+export type IconType = "link" | "search" | "image" | "header" | "code" | "map" | "table" | "th" | "circle" | "filter" | "stop" | 
 "forward" | "retweet" | "minus" | "plus" | "info" | "exclamation" | "check" | "close" | "book" | "bars" | "question" | 
 "pause" | "home" | "laptop" | "star" | "save" | "user" | "phone" | "paperclip" | "inbox" | "lock" | "qrcode" | "tags" | 
 "cloud" | "eye" | "camera" | "windows" | "heart" | "calculator" | "chrome" | "github" | "upload" | "download" | "unlock" | 
@@ -37,6 +37,7 @@ type IconType = "link" | "search" | "image" | "header" | "code" | "map" | "table
 interface IButtonProps {
     size ?: number;
     style ?: TextStyle;
+    textStyle ?: TextStyle;
     children ?: ReactNode;
     backgroundColor ?: string | OpaqueColorValue | undefined;
     ref?: ForwardedRef<any>;
@@ -46,10 +47,10 @@ interface IButtonProps {
 type IButtonPropsType = Partial<IconButtonProps & IconProps> & IButtonProps;
 
 const IconButton = React.forwardRef<Component<IButtonPropsType>, IButtonPropsType>((props, fRef) => {
-    const { name, style, size, children, color, ...other } = props;
+    const { name, textStyle, size, children, color, ...other } = props;
     return (
         <FontAwesome.Button {...props} name={name} ref={fRef}>
-            <Text style={[style, { fontSize: size, color: color }]}>{children}</Text>
+            <Text style={{...textStyle, ...{ fontSize: size, color: color }}}>{children}</Text>
         </FontAwesome.Button>
     );
 });

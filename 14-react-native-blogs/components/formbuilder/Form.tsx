@@ -1,24 +1,25 @@
-import { FormComponentConfigs, FormComponentListener, PropToComponentKindMapping } from './form-types';
-import { ValidStatus, ChangedStatus, Validator, ValidationResult, ValidationConfig } from './validation/validate';
+import { FormCancelListener, FormComponentConfigs, FormComponentListener, PropToComponentKindMapping } from './form-types';
+import { ValidStatus, ChangedStatus, Validator, ValidationResult, ValidationConfig, validatorValidate, FieldValidationResult } from './validation/validate';
 import { Component } from 'react';
-import { StyleProp, View, ViewStyle, StyleSheet, ScrollView, SafeAreaView, StatusBar, Text } from 'react-native';
+import { View, ViewStyle, StyleSheet, ScrollView } from 'react-native';
 import IconButton from '../IconButton';
 import { FormTextComponent, FormTextComponentOptions } from './FormTextComponent';
 import { FormDropdownComponent, FormDropdownComponentOptions } from './FormDropdownComponent';
 import { FormComponentState } from './FormComponent';
-import { AnyConfiguration } from '@expo/webpack-config/webpack/types';
 import { FormReadonlyTextComponent } from './FormReadonlyTextComponent';
-
+import { FormImageComponent, FormImageComponentOptions } from './FormImageComponent';
+import { EMPTY_IMAGE_DATA } from '../../App';
+import { ImageData } from '../../model/shared-types';
 
 
 interface FormProps<Entity, FormConfig extends PropToComponentKindMapping<Entity>> {
     config: FormComponentConfigs<Entity, FormConfig>;
     initialValue: Entity;
     onSubmit: FormComponentListener<Entity>;
-    validationConfig?: ValidationConfig<Entity>;
+    onCancel?: FormCancelListener;
     valid?: ValidStatus;
     formId?: number;
-    style?: StyleProp<ViewStyle>;
+    style?: ViewStyle;
 }
 
 type FormState<Entity> = {
@@ -33,11 +34,33 @@ export class Form<Entity, FormConfig extends PropToComponentKindMapping<Entity>>
 
     handleFieldChange = (fieldName: keyof FormState<Entity> & string,
         value: string | Entity[keyof Entity & string] | undefined) => {
+        const fieldConfig = this.props.config[fieldName];
+        const convertor = fieldConfig.convertor;
+        const validators = fieldConfig.validators;
+        let fieldValue: Entity[keyof Entity & string] | undefined;
+        if ((fieldConfig.componentKind === undefined || fieldConfig.componentKind === 'FormTextComponent')
+            && value !== undefined && convertor) {
+            fieldValue = convertor.fromString(value + '');
+        } else {
+            fieldValue = value as Entity[keyof Entity & string] | undefined;
+        }
+        let errors: FieldValidationResult = undefined;
+        if (fieldValue) {
+            const definedFieldValue = fieldValue;
+            if (validators) {
+                if (Array.isArray(validators)) {
+                    errors = validators.flatMap(validator =>
+                        validatorValidate<Entity[keyof Entity & string]>(validator, fieldName, definedFieldValue))
+                        .filter(err => err !== undefined) as string[];
+                } else {
+                    errors = validatorValidate<Entity[keyof Entity & string]>(validators, fieldName, definedFieldValue)
+                }
+            }
+        }
         const fieldUpdate = {
-            value: value,
-            changed: ChangedStatus.PRISTINE,
-            valid: ValidStatus.INVALID,
-            validationErrors: []
+            value: fieldValue,
+            changed: ChangedStatus.DIRTY,
+            validationErrors: errors
         } as FormComponentState<Entity[typeof fieldName]>;
         this.setState({ [fieldName]: fieldUpdate } as Pick<FormState<Entity>, keyof Entity>);
     }
@@ -53,7 +76,6 @@ export class Form<Entity, FormConfig extends PropToComponentKindMapping<Entity>>
             }
         })
         this.props.onSubmit(entity);
-        this.reset();
     }
 
     createInitialFormState(): FormState<Entity> {
@@ -63,27 +85,34 @@ export class Form<Entity, FormConfig extends PropToComponentKindMapping<Entity>>
                 prevState[prop] = {
                     value: this.props.initialValue[prop],
                     changed: ChangedStatus.PRISTINE,
-                    valid: ValidStatus.INVALID,
-                    validationErrors: [],
+                    validationErrors: undefined,
                 }
                 return prevState;
             }, {} as Partial<FormState<Entity>>);
     }
 
-    reset() {
+    reset = () => {
         this.setState(this.createInitialFormState());
     }
 
     render() {
         const { config, style = {}, initialValue } = this.props;
         return (
-            <SafeAreaView style={styles.container}>
-                <ScrollView contentContainerStyle={style}>
+            <ScrollView style={styles.scrollPanel}>
+                <View style={{ ...styles.form, ...style }}>
                     {
                         Object.keys(config).map(field => {
                             const entityProp = field as keyof Entity & string;
-                            const value = this.state[entityProp]?.value;
+                            const prop = this.state[entityProp]
+                            const value = prop?.value;
+                            const errors = prop?.validationErrors;
+                            const erorrsStr = errors ? errors.toString() : undefined;
                             const fieldConfig = config[entityProp];
+                            const convertor = fieldConfig.convertor;
+                            let stringValue: string = value ? value + '' : '';
+                            if (value !== undefined && convertor) {
+                                stringValue = convertor.toString(value);
+                            }
                             switch (fieldConfig?.componentKind) {
                                 case 'FormDropdownComponent':
                                     const fieldConfigDropdown = Object.assign({}, config[entityProp],
@@ -91,46 +120,67 @@ export class Form<Entity, FormConfig extends PropToComponentKindMapping<Entity>>
                                     return <FormDropdownComponent<typeof value | undefined>
                                         key={entityProp} id={entityProp} value={value}
                                         onChange={val => this.handleFieldChange(entityProp, val)}
-                                        {...fieldConfigDropdown} />
+                                        {...fieldConfigDropdown} errors={erorrsStr} />
                                 case 'FormReadonlyTextComponent':
                                     const { options, onChange, ...fieldConfigReadonlyText } = config[entityProp];
                                     return <FormReadonlyTextComponent
-                                        key={entityProp} id={entityProp} value={value ? value + '' : ''}
-                                        {...fieldConfigReadonlyText} />
+                                        key={entityProp} id={entityProp} value={stringValue}
+                                        {...fieldConfigReadonlyText} errors={erorrsStr} />
+                                case 'FormImageComponent':
+                                    const fieldConfigImage = Object.assign({}, fieldConfig,
+                                        { options: fieldConfig.options as FormImageComponentOptions });
+                                    return <FormImageComponent<typeof value | undefined>
+                                        key={entityProp} id={entityProp} value={value}
+                                        onChange={val => this.handleFieldChange(entityProp, val)}
+                                        {...fieldConfigImage} errors={erorrsStr} />
                                 default:
-                                    const fieldConfigText = Object.assign({}, config[entityProp],
+                                    const fieldConfigText = Object.assign({}, fieldConfig,
                                         { options: fieldConfig.options as FormTextComponentOptions });
-                                    return <FormTextComponent key={entityProp} id={entityProp} value={value ? value + '' : ''}
-                                        onChange={val => this.handleFieldChange(entityProp, val)} {...fieldConfigText} />
+                                    return <FormTextComponent key={entityProp} id={entityProp} value={stringValue}
+                                        onChange={val => this.handleFieldChange(entityProp, val)} {...fieldConfigText}
+                                        errors={erorrsStr} />
                             }
                         })
                     }
                     <View style={styles.buttons}>
-                        <IconButton size={30} backgroundColor="green" color="white" onPress={this.handleSubmit} name='check-circle' >
-                            Add TODO
+                        <IconButton size={20} backgroundColor="green" color="white" onPress={this.handleSubmit} name='check-circle' >
+                            Submit
                         </IconButton>
-                        <IconButton size={30} backgroundColor="red" color="white" onPress={this.reset} name='times-circle' >
+                        <IconButton size={20} backgroundColor="#ff4466" color="white" onPress={this.reset} name='times-circle' >
                             Reset
                         </IconButton>
+                        <IconButton size={20} backgroundColor="gray" color="white" onPress={this.props.onCancel} name='times-circle' >
+                            Cancel
+                        </IconButton>
                     </View>
-                </ScrollView>
-            </SafeAreaView>
+                </View>
+            </ScrollView>
         );
     }
 }
 
 const styles = StyleSheet.create({
-    container: {
+    scrollPanel: {
         flex: 1,
-        paddingTop: StatusBar.currentHeight,
+        width: "100%",
+    },
+    form: {
+        width: "95%",
+        backgroundColor: "#eee",
+        borderRadius: 10,
+        alignItems: "stretch",
+        paddingHorizontal: 10,
+        paddingBottom: 20,
+        marginTop: 10,
+        alignSelf: 'center',
     },
     buttons: {
-        fontSize: 45,
         marginTop: 20,
-        marginBottmo: 30,
+        marginRight: 10,
+        marginBottom: 30,
         display: 'flex',
         flexDirection: 'row',
-        gap: 10,
+        justifyContent: 'space-around',
         width: '100%',
     },
 });

@@ -33,7 +33,7 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         alignItems: 'stretch',
         width: '100%',
-        padding: 20,
+        padding: 5,
     },
     label: {
         paddingTop: 5,
@@ -41,11 +41,13 @@ const styles = StyleSheet.create({
         alignSelf: 'flex-start',
     },
     readonlyField: {
-        fontSize: 24,
+        fontSize: 20,
         width: '100%',
-        height: 45,
-        padding: 5,
-        borderColor: 'gray',
+        height: 40,
+        borderColor: "green",
         borderWidth: 1,
+        borderRadius: 5,
+        marginBottom: 5,
+        padding: 5,
     },
 });
