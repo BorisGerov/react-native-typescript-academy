@@ -9,11 +9,9 @@ import { FormComponentConfigs } from "./components/formbuilder/form-types";
 import IconButton from './components/IconButton';
 import * as yup from 'yup';
 import PostItem, { ITEM_HEIGHT, PostItemProps } from "./components/PostItem";
-
 export enum Views {
   PostFormView = 1, PostListView
 }
-
 interface AppState {
   activeView: Views;
   errors: string | undefined;
@@ -21,10 +19,10 @@ interface AppState {
   filter: FilterType;
   editedPost: Post;
   scrollIndex: number;
+  selectedTag: string[];
 }
 export const EMPTY_IMAGE_DATA = { uri: '', width: 0, height: 0 };
 const EMPTY_POST = new Post('', '', [], EMPTY_IMAGE_DATA, 1);
-
 class App extends Component<{}, AppState> {
   state: AppState = {
     activeView: Views.PostListView,
@@ -33,9 +31,9 @@ class App extends Component<{}, AppState> {
     filter: undefined,
     editedPost: EMPTY_POST,
     scrollIndex: 0,
+    selectedTag: []
   }
   postsListRef = React.createRef<FlatList<Post>>()
-
   async componentDidMount() {
     try {
       const allPosts = await BlogsAPI.findAll();
@@ -44,7 +42,6 @@ class App extends Component<{}, AppState> {
       this.setState({ errors: err as string })
     }
   }
-
   componentDidUpdate(prevProps: Readonly<{}>, prevState: Readonly<AppState>, snapshot?: any): void {
     if (this.state.activeView === Views.PostListView) {
       if (Platform.OS === 'web') {
@@ -54,13 +51,11 @@ class App extends Component<{}, AppState> {
       }
     }
   }
-
   handleUpdatePost = (post: Post) => {
     this.setState(({ posts }) => ({
       posts: posts.map(td => td.id === post.id ? post : td)
     }))
   }
-
   handleDeletePost = async (post: Post) => {
     try {
       await BlogsAPI.deleteById(post.id);
@@ -72,7 +67,6 @@ class App extends Component<{}, AppState> {
       this.setState({ errors: err as string })
     }
   }
-
   handleSubmitPost = async (post: Post) => {
     try {
       post.tags = post.tags.filter(tag => tag.trim().length > 0)
@@ -104,7 +98,6 @@ class App extends Component<{}, AppState> {
       this.setState({ errors: err as string })
     }
   }
-
   handleFormCancel = () => {
     this.setState({
       errors: undefined,
@@ -112,21 +105,20 @@ class App extends Component<{}, AppState> {
       activeView: Views.PostListView,
     })
   }
-
+  handleFilter = (tags:string[]) =>{
+   this.setState({selectedTag: tags})
+  }
   handleEditTodo = (post: Post) => {
     this.setState({ editedPost: post, activeView: Views.PostFormView });
   }
-
   handlefilterChange = (status: FilterType) => {
     this.setState({ filter: status })
   }
-
   handleViewChange = () => {
     this.setState(({ activeView }) => ({
       activeView: activeView === Views.PostListView ? Views.PostFormView : Views.PostListView
     }));
   }
-
   render() {
     return (
       <SafeAreaView style={styles.container}>
@@ -151,11 +143,11 @@ class App extends Component<{}, AppState> {
               case Views.PostListView:
                 return (
                   <PostList ref={this.postsListRef} posts={this.state.posts}
-                    filter={this.state.filter}
-                    onDelete={this.handleDeletePost}
-                    onEdit={this.handleEditTodo}
-                    scrollIndex={this.state.scrollIndex}
-                  />);
+                  filter={this.state.filter}
+                  onDelete={this.handleDeletePost}
+                  onEdit={this.handleEditTodo}
+                  onFilter={this.handleFilter}
+                  scrollIndex={this.state.scrollIndex} filterTags={this.state.selectedTag}                  />);
             }
           })()}
         </KeyboardAvoidingView>
@@ -163,10 +155,7 @@ class App extends Component<{}, AppState> {
     );
   }
 }
-
 export default App;
-
-
 type PostFormPropToCompKindMapping = {
   id: 'FormReadonlyTextComponent';
   title: 'FormTextComponent';
@@ -176,7 +165,6 @@ type PostFormPropToCompKindMapping = {
   status: 'FormDropdownComponent';
   authorId: 'FormTextComponent';
 }
-
 const postFormConfig: FormComponentConfigs<Post, PostFormPropToCompKindMapping> = {
   id: {
     componentKind: 'FormReadonlyTextComponent',
@@ -191,7 +179,7 @@ const postFormConfig: FormComponentConfigs<Post, PostFormPropToCompKindMapping> 
     options: {
       multiline: true,
     },
-    validators: yup.string().min(40).max(2048),
+    validators: yup.string().min(15).max(2048),
   },
   tags: {
     convertor: {
@@ -236,7 +224,6 @@ const postFormConfig: FormComponentConfigs<Post, PostFormPropToCompKindMapping> 
     }
   },
 };
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -270,7 +257,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     border: 1,
     borderRadius: 5,
-    backgroundColor: '#eecccc',
+    backgroundColor: '#EECCCC',
     color: 'red',
     textAlign: 'center',
   }

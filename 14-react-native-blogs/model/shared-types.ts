@@ -1,3 +1,4 @@
+import Tag from "../components/Tag";
 import { Post, PostStatus } from "./posts.model";
 import { Todo } from "./todo.model";
 
@@ -33,6 +34,7 @@ export interface FilterChangeListener {
   (filter: FilterType): void;
 }
 
-
-
+export interface TagListener {
+  (tag: Tag): void;
+}
 
