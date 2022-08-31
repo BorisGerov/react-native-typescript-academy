@@ -1,39 +1,24 @@
 import React, { useEffect, useState, useRef, Component } from "react";
 import { Text, View, StyleSheet, Animated, Button } from "react-native";
 import Constants from "expo-constants";
-interface ProgressBarState {
-  current: number;
-}
+
 interface ProgressBarProps {
   min: number;
   max: number;
-  onFinish : () => void;
+  current: number;
 }
 const translation = new Animated.Value(0);
-class ProgressBar extends Component<ProgressBarProps, ProgressBarState> {
-  state: Readonly<ProgressBarState> = {
-    current: this.props.min,
-};
-countInterval: NodeJS.Timer | undefined = undefined;
-componentDidMount() {
-  this.countInterval = setInterval(() => this.setState({current: this.state.current + 1}), 100);
-}
-componentDidUpdate() {
-  this.newAnimations(this.state.current);
-  if (this.state.current >= this.props.max) {
-    this.props.onFinish();
-    clearInterval(this.countInterval);
-    this.setState({current : 100})
-  }
-}
-  newAnimations = (count: number) =>
-  {
-    Animated.timing(translation, {
-                toValue: count,
-                duration: 100,
-                useNativeDriver: true,
+class ProgressBar extends Component<ProgressBarProps, {}> {
+
+componentDidUpdate(prevProps: ProgressBarProps) {
+    if(this.props.current !==  prevProps.current) {
+      Animated.timing(translation , {
+              duration: 1000,
+              toValue: this.props.current,
+              useNativeDriver:false
             }).start();
-            console.log(count);
+            console.log(this.props.current);
+          }
   }
   render() {
     return (
@@ -43,7 +28,9 @@ componentDidUpdate() {
           <Animated.View
             style={[
               StyleSheet.absoluteFill,
-              { backgroundColor: "#8BED4F",
+              { backgroundColor: "#4fe07a",
+                justifyContent: "center",
+                alignItems: "center",
               width: translation.interpolate({
                 inputRange: [this.props.min, this.props.max],
                 outputRange: ["0%", "100%"],
@@ -52,7 +39,7 @@ componentDidUpdate() {
             }
             ]}
           >
-               <Text>{this.state.current}%</Text>
+               <Text>{this.props.current}%</Text>
           </Animated.View>
         </View>
       </View>
