@@ -1,5 +1,4 @@
-import Tag from "../components/Tag";
-import { Post, PostStatus } from "./posts.model";
+import { ImageClass, PostStatus } from "./posts.model";
 import { Todo } from "./todo.model";
 
 export type IdType = number | undefined
@@ -25,7 +24,7 @@ export interface TodoListener {
 }
 
 export interface PostListener {
-  (post: Post): void;
+  (post: ImageClass): void;
 }
 
 export type FilterType = PostStatus | undefined;
@@ -34,7 +33,6 @@ export interface FilterChangeListener {
   (filter: FilterType): void;
 }
 
-export interface TagListener {
-  (tag: Tag): void;
-}
+
+
 

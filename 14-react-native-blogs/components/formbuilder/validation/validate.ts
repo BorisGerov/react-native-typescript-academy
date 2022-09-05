@@ -1,4 +1,4 @@
-import { Post } from "../../../model/posts.model";
+import { ImageClass } from "../../../model/posts.model";
 import * as yup from 'yup';
 import { Optional } from "../../../model/shared-types";
 
@@ -40,9 +40,9 @@ export type Validator<V> = ValidatorFunc<V> | yup.BaseSchema
 
 export type ValidatorFactory<V> = (...args: any) => Validator<V>
 
-type PostValidationConfig = ValidationConfig<Post>
+type PostValidationConfig = ValidationConfig<ImageClass>
 
-type PostValidationResult = ValidationResult<Post>
+type PostValidationResult = ValidationResult<ImageClass>
 
 // Validation Utils
 export function validatorValidate<Value>

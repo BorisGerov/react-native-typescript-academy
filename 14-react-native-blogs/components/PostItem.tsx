@@ -1,49 +1,53 @@
 import React, { Component } from "react";
-import { PostListener, TagListener } from "../model/shared-types";
-import { Post, PostStatus } from "../model/posts.model"
+import { PostListener } from "../model/shared-types";
+import { ImageClass, PostStatus } from "../model/posts.model"
 import { Button, Image, ScrollView, StyleSheet, Text, View, } from "react-native";
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import IconButton from "./IconButton";
-import TagButton from "./Tag";
+
 export const ITEM_HEIGHT = 400;
 export const ITEM_PADDING = 10;
+
 export interface PostItemProps {
-    post: Post;
+    post: ImageClass;
     onDelete: PostListener;
     onEdit: PostListener;
-    onFilter: (tags: string[])=> void;
-    filterTags: string[];
 }
+
+
 export interface PostItemListener {
-    (post: Post, postItemComponent: Component<PostItemProps, {}>): void;
+    (post: ImageClass, postItemComponent: Component<PostItemProps, {}>): void;
 }
+
 export default class PostItem extends Component<PostItemProps, {}> {
-    // handleTag = (tag: string) => {
-    //     console.log(tag)
-    // }
     render() {
-        const { post, onDelete, onEdit, onFilter, filterTags}: PostItemProps = this.props;
+        const { post, onDelete, onEdit }: PostItemProps = this.props;
         return (
             <View style={styles.itemContainer}>
                 <View style={styles.postItem}>
                     <View style={styles.postHeader}>
                         <Image resizeMode='contain' style={styles.postImage} source={{ uri: post.image.uri }}></Image>
                         <View style={styles.postContent} >
-                            <Text style={styles.title}>{post.title} </Text>
-                            <Text style={styles.postMetadata}>{PostStatus[post.status]},  Author ID: {post.authorId}</Text>
-                            <TagButton style1 = {styles.postTags} style2 = {styles.postTag} tags = {post.tags} onPress={() => console.log(1)} filterTags={filterTags}
-                            onFilter={onFilter}/>
+                            <Text style={styles.title}>{post.title}</Text>
+                            <Text style={styles.postMetadata}>{PostStatus[post.status]},  Author Name: {post.authorName}</Text>
+                            <View style={styles.postTags}>
+                                {post.tags.map(tag => <Text key={tag} style={styles.postTag}>{tag}</Text>)}
+                            </View><Text style={styles.postText}>{post.deadline}</Text>
                         </View>
                     </View>
+
                     <ScrollView style={styles.textScrollView} nestedScrollEnabled={true}>
-                        <Text style={styles.postText}>{post.content}</Text>
+                        <Text style={styles.postText}>{post.description}</Text>
                     </ScrollView>
+                    <View>
+                        
+                    </View>
                     <View style={styles.postItemButtons}>
                         <IconButton style={styles.button} textStyle={styles.buttonText} name="pencil-square" size={27} color="white" backgroundColor='green'
                             onPress={() => onEdit(post)}>Edit
                         </IconButton>
                         <View style={{ width: 20, backgroundColor: 'transparent' }} />
-                        <IconButton style={styles.button} textStyle={styles.buttonText} name="times-circle" size={27} color="white" backgroundColor='#FF4466'
+                        <IconButton style={styles.button} textStyle={styles.buttonText} name="times-circle" size={27} color="white" backgroundColor='#ff4466'
                             onPress={() => onDelete(post)}>Delete
                         </IconButton>
                     </View>
@@ -52,6 +56,7 @@ export default class PostItem extends Component<PostItemProps, {}> {
         )
     }
 }
+
 const styles = StyleSheet.create({
     itemContainer: {
         padding: ITEM_PADDING,
@@ -103,7 +108,7 @@ const styles = StyleSheet.create({
         paddingVertical: 5,
         fontSize: 18,
         fontWeight: 'bold',
-        backgroundColor: '#FCCB58',
+        backgroundColor: '#fccb58',
         borderRadius: 15,
         borderColor: 'green',
     },
@@ -145,10 +150,12 @@ const styles = StyleSheet.create({
         alignItems: "center",
         backgroundColor: "#C4D7E0",
     },
+
     btnContainer: {
         display: "flex",
         flexDirection: "row",
         gap: 40,
         marginTop: 20,
     },
+
 });

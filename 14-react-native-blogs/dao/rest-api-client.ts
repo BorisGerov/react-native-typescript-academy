@@ -1,4 +1,4 @@
-import { Post } from "../model/posts.model.js";
+import { ImageClass } from "../model/posts.model.js";
 import { Identifiable, IdType } from "../model/shared-types.js";
 import { Todo } from "../model/todo.model.js";
 
@@ -17,6 +17,13 @@ export class ApiClientImpl<K, V extends Identifiable<K>> implements ApiClient<K,
 
     async findAll(): Promise<V[]> {
         return this.handleRequest(`${API_BASE_URL}/${this.collectionSuffix}`);
+    }
+
+    async findByPage(page: number, limit: number): Promise<V[]> {
+        return this.handleRequest(`${API_BASE_URL}/${this.collectionSuffix}?${new URLSearchParams({
+            _page: page + 1 + '',
+            _limit: limit + '',
+        }).toString()}`);
     }
 
     async findById(id: K): Promise<V> {
@@ -56,12 +63,12 @@ export class ApiClientImpl<K, V extends Identifiable<K>> implements ApiClient<K,
                 return Promise.reject(postsResp.body?.toString());
             }
             return postsResp.json();
-        } catch (err) {
+        } catch (err: any) {
             return Promise.reject(err?.toString());
         }
     }
 }
 
 export const TodosAPI = new ApiClientImpl<IdType, Todo>('todos');
-export const BlogsAPI = new ApiClientImpl<IdType, Post>('posts');
+export const BlogsAPI = new ApiClientImpl<IdType, ImageClass>('posts');
 
