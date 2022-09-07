@@ -55,7 +55,7 @@ export class FormImageComponent<V = ImageData>
                 format: inferredFormat,
                 width: undefined,
                 height: undefined,
-            } as V);
+            } as unknown as V);
         }
     }
 
@@ -75,7 +75,7 @@ export class FormImageComponent<V = ImageData>
         }
 
         const formImageData = await this.getFormImageResult(pickerResult);
-        this.props.onChange(formImageData as V);
+        this.props.onChange(formImageData as unknown as V);
     };
 
     async getFormImageResult(pickerResult: ImageInfo): Promise<ImageData> {
@@ -116,7 +116,7 @@ export class FormImageComponent<V = ImageData>
             inputStyle = {},
             errorStyle = {},
         } = this.props;
-        const imageData = value as ImageData;
+        const imageData = value as unknown as ImageData;
         return (
             <View style={{ ...styles.view, ...style }}>
                 <Text style={{ ...styles.label, ...labelStyle }}>{label}</Text>

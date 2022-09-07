@@ -1,9 +1,9 @@
 import React, { Component } from "react";
 import { StyleSheet, SafeAreaView, StatusBar, KeyboardAvoidingView, Platform, FlatList, Dimensions } from "react-native";
 import { BlogsAPI } from "./dao/rest-api-client";
-import { FilterType, Optional } from "./model/shared-types";
+import { FilterType, StatusForQuestion, Optional } from "./model/shared-types";
 import { Form } from "./components/formbuilder/Form";
-import { ImageClass, PostStatus } from "./model/posts.model";
+import { Answer, Questions } from "./model/posts.model";
 import PostList from "./components/PostList";
 import { FormComponentConfigs } from "./components/formbuilder/form-types";
 import IconButton from './components/IconButton';
@@ -11,27 +11,29 @@ import * as yup from 'yup';
 import PostItem, { ITEM_HEIGHT, PostItemProps } from "./components/PostItem";
 import Draggable from "./Draggable";
 
-export const DEFAULT_PAGE_SIZE = 5;
+export const DEFAULT_PAGE_SIZE = 10;
 
 export enum Views {
-  PostFormView = 1, PostListView
+  PostFormView = 1, PostListView 
 }
 
 interface AppState {
   activeView: Views;
+  testView: Views;
   errors: string | undefined;
-  posts: ImageClass[];
+  posts: Questions[];
   page: number;
   filter: FilterType;
-  editedPost: ImageClass;
+  editedPost: Questions;
   scrollIndex: number;
 }
 export const EMPTY_IMAGE_DATA = { uri: '', width: 0, height: 0 };
-const EMPTY_POST = new ImageClass('', EMPTY_IMAGE_DATA, [], '', '');
+const EMPTY_POST = new Questions('',100,[],EMPTY_IMAGE_DATA, StatusForQuestion.MultipleChoice, 1);
 
 class App extends Component<{}, AppState> {
   state: AppState = {
     activeView: Views.PostListView,
+    testView: Views.PostListView,
     errors: '',
     posts: [],
     page: 0,
@@ -39,7 +41,7 @@ class App extends Component<{}, AppState> {
     editedPost: EMPTY_POST,
     scrollIndex: 0,
   }
-  postsListRef = React.createRef<FlatList<ImageClass>>()
+  postsListRef = React.createRef<FlatList<Questions>>()
 
   async componentDidMount() {
     this.loadMorePosts();
@@ -68,13 +70,13 @@ class App extends Component<{}, AppState> {
     }
   }
 
-  handleUpdatePost = (post: ImageClass) => {
+  handleUpdatePost = (post: Questions) => {
     this.setState(({ posts }) => ({
       posts: posts.map(td => td.id === post.id ? post : td)
     }))
   }
 
-  handleDeletePost = async (post: ImageClass) => {
+  handleDeletePost = async (post: Questions) => {
     try {
       await BlogsAPI.deleteById(post.id);
       this.setState(({ posts }) => ({
@@ -86,9 +88,9 @@ class App extends Component<{}, AppState> {
     }
   }
 
-  handleSubmitPost = async (post: ImageClass) => {
+  handleSubmitPost = async (post: Questions) => {
     try {
-      post.tags = post.tags.filter(tag => tag.trim().length > 0)
+      post.answers = post.answers.filter(answer => answer.trim().length > 0)
       if (post.id) { //edit post
         const updated = await BlogsAPI.update(post);
         const scrollIndex = this.state.posts.findIndex(p => p.id === updated.id)
@@ -126,10 +128,9 @@ class App extends Component<{}, AppState> {
     })
   }
 
-  handleEditTodo = (post: ImageClass) => {
+  handleEditTodo = (post: Questions) => {
     this.setState({ editedPost: post, activeView: Views.PostFormView });
   }
-
   handlefilterChange = (status: FilterType) => {
     this.setState({ filter: status })
   }
@@ -139,23 +140,30 @@ class App extends Component<{}, AppState> {
       activeView: activeView === Views.PostListView ? Views.PostFormView : Views.PostListView
     }));
   }
-
+  handleStartTest = () => {
+    this.setState(({testView}) => ({
+      testView: testView === Views.PostListView ? Views.PostListView : Views.PostListView
+    }));
+  }
   render() {
     return (
       <SafeAreaView style={styles.container}>
-        <StatusBar backgroundColor="green" />
+        <StatusBar backgroundColor="blue" />
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : "height"}
           style={styles.keyboarAvoidingView}
         >
           <IconButton size={30} backgroundColor="green" color="white" onPress={this.handleViewChange} name='check-circle' >
-            {this.state.activeView === Views.PostListView ? 'Add New Photo to the Gallery' : 'Show All Photos in the Gallery'}
+            {this.state.activeView === Views.PostListView ? 'Add New Question' : 'Show All Questions'}
+          </IconButton>
+          <IconButton size={30} backgroundColor="green" color="white" onPress={this.handleViewChange} name='check-circle' >
+            {this.state.activeView === Views.PostListView ? 'Start Test' : 'Cancel Test'}
           </IconButton>
           {(() => {
             switch (this.state.activeView) {
               case Views.PostFormView:
                 return (
-                  <Form<ImageClass, PostFormPropToCompKindMapping>
+                  <Form<Questions, PostFormPropToCompKindMapping>
                     config={postFormConfig}
                     // initialValue={new Post('Example Post', 'Example content ...', ['example', 'post'], 'https://www.publicdomainpictures.net/pictures/160000/velka/jeune-femme-poste-de-travail.jpg', 1)}
                     initialValue={this.state.editedPost}
@@ -181,43 +189,34 @@ class App extends Component<{}, AppState> {
 
 export default App;
 
-
-type PostFormPropToCompKindMapping = {
+type PostFormPropToCompKindMappingAnswers = {
   id: 'FormReadonlyTextComponent';
-  title: 'FormTextComponent';
-  description: 'FormTextComponent';
-  tags: 'FormTextComponent';
-  image: 'FormImageComponent';
-  status: 'FormDropdownComponent';
-  authorName: 'FormTextComponent';
-  deadline: 'FormTextComponent';
+  scorePercentage: 'FormTextComponent';
+  textOfAnswer?: 'FormTextComponent';
+  pictureOfAnswer?: 'FormImageComponent';
+  created: 'FormTextComponent';
+  modified: 'FormTextComponent';
 }
 
-const postFormConfig: FormComponentConfigs<ImageClass, PostFormPropToCompKindMapping> = {
+const postFormConfigAnswer: FormComponentConfigs<Answer,PostFormPropToCompKindMappingAnswers> = {
   id: {
     componentKind: 'FormReadonlyTextComponent',
     label: 'ID',
   },
-  title: {
-    label: 'Image Title',
-    validators: yup.string().min(2).max(40),
+  scorePercentage: {
+    componentKind: 'FormTextComponent',
+    label: 'Score Percentage'
   },
-  description: {
-    label: 'Image Description',
+  textOfAnswer: {
+    label: 'Text of the Answer',
     options: {
       multiline: true,
     },
-    validators: yup.string().min(0).max(256),
+    validators: yup.string().min(2).max(150),
   },
-  tags: {
-    convertor: {
-      fromString: (tags: string) => tags.split(/\W+/),
-      toString: (tagsArray: string[]) => tagsArray.toString()
-    }
-  },
-  image: {
+  pictureOfAnswer: {
     componentKind: 'FormImageComponent',
-    label: 'Image URL',
+    label: 'URL for Answer',
     validators: yup.object().shape({
       uri: yup.string().required().test(
         'is-url',
@@ -230,24 +229,84 @@ const postFormConfig: FormComponentConfigs<ImageClass, PostFormPropToCompKindMap
       height: yup.number().integer().min(0)
     }),
   },
+  created: {
+    label: 'Created',
+    componentKind: 'FormTextComponent',
+  },
+  modified: {
+    label: 'Modified',
+    componentKind: 'FormTextComponent',
+  }
+}
+
+type PostFormPropToCompKindMapping = {
+  id: 'FormReadonlyTextComponent';
+  status: 'FormDropdownComponent';
+  textOfQuestion: 'FormTextComponent';
+  points: 'FormReadonlyTextComponent';  
+  answers: 'FormTextComponent';
+  pictureOfQuestion?: 'FormImageComponent';
+  created: 'FormTextComponent';
+  modified: 'FormTextComponent';
+}
+
+const postFormConfig: FormComponentConfigs<Questions, PostFormPropToCompKindMapping> = {
+  id: {
+    componentKind: 'FormReadonlyTextComponent',
+    label: 'ID',
+  },
   status: {
     componentKind: 'FormDropdownComponent',
-    label: 'Image Status',
+    label: 'Question Status',
     options: {
       choices: [
-        { label: PostStatus[PostStatus.Published], value: PostStatus.Published },
-        { label: PostStatus[PostStatus.Draft], value: PostStatus.Draft }
+        { label: StatusForQuestion[StatusForQuestion.MultipleChoice], value: StatusForQuestion.MultipleChoice },
+        { label: StatusForQuestion[StatusForQuestion.MultipleResponse], value: StatusForQuestion.MultipleResponse },
+        { label: StatusForQuestion[StatusForQuestion.DragAndDrop], value: StatusForQuestion.DragAndDrop }
       ]
     }
   },
-  authorName: {
-    label: 'Author Name',
-    validators: yup.string().min(3).max(40),
+  textOfQuestion: {
+    label: 'Text of the Question',
+    options: {
+      multiline: true,
+    },
+    validators: yup.string().min(10).max(500),
   },
-  deadline: {
-    label: 'Deadline',
+  points: {
+    label: 'Points',
+    componentKind: 'FormReadonlyTextComponent'
+  },
+  answers: {
+    label : 'Answers',
     componentKind: 'FormTextComponent',
-
+    // convertor: {
+    //   fromString: (answer: Answer) => answer.split(/\W+/),
+    //   toString: (answerArray: Answer[] ) => answerArray.toString()
+    // }
+  },
+  pictureOfQuestion: {
+    componentKind: 'FormImageComponent',
+    label: 'URL for Question',
+    validators: yup.object().shape({
+      uri: yup.string().required().test(
+        'is-url',
+        '${path} is not a valid URL',
+        (value: string | undefined) => !!value && (value.startsWith('data') || yup.string().url().isValidSync(value))
+      ),
+      localUri: yup.string(),
+      format: yup.string().oneOf(['jpeg', 'png', 'webp']),
+      width: yup.number().integer().min(0),
+      height: yup.number().integer().min(0)
+    }),
+  },
+  created: {
+    label: 'Created',
+    componentKind: 'FormTextComponent',
+  },
+  modified: {
+    label: 'Modified',
+    componentKind: 'FormTextComponent',
   }
 };
 

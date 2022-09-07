@@ -1,4 +1,4 @@
-import { ImageClass, PostStatus } from "./posts.model";
+import { Questions } from "./posts.model";
 import { Todo } from "./todo.model";
 
 export type IdType = number | undefined
@@ -13,6 +13,10 @@ export interface ImageData {
   height?: number;
 }
 
+export enum StatusForQuestion {
+  MultipleChoice = 1, MultipleResponse , DragAndDrop
+}
+
 export type FormFieldDict<Value> = {
   [field: string]: Value
 };
@@ -24,10 +28,10 @@ export interface TodoListener {
 }
 
 export interface PostListener {
-  (post: ImageClass): void;
+  (post: Questions): void;
 }
 
-export type FilterType = PostStatus | undefined;
+export type FilterType = StatusForQuestion | undefined;
 
 export interface FilterChangeListener {
   (filter: FilterType): void;

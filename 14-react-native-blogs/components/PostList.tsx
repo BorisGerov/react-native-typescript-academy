@@ -1,12 +1,12 @@
 import { forwardRef, useMemo, useRef, useEffect } from "react";
 import { FlatList, View, Animated, Dimensions } from "react-native";
 import { FilterType, IdType, PostListener } from "../model/shared-types";
-import { ImageClass } from "../model/posts.model";
+import { Answer, Questions } from "../model/posts.model";
 import PostItem, { ITEM_HEIGHT, PostItemListener } from "./PostItem";
 import { DEFAULT_PAGE_SIZE } from "../App";
 
 interface Props {
-    posts: ImageClass[];
+    posts: Questions[];
     page: number;
     filter: FilterType;
     scrollIndex?: number;
@@ -19,17 +19,17 @@ type PostIdToAnimatedValueMap = {
     [id: number]: Animated.Value
 }
 
-const PostList = forwardRef<FlatList<ImageClass>, Props>((props, fRef) => {
+const PostList = forwardRef<FlatList<Questions>, Props>((props, fRef) => {
     const postsAnimatedValues = useRef<PostIdToAnimatedValueMap>([]).current;
     const { posts, page, filter, scrollIndex, onLoadMorePosts, ...rest }: Props = props;
-    const visiblePosts = (posts: ImageClass[], filter: FilterType) => posts.filter(post => !filter ? true : post.status === filter);
+    const visiblePosts = (posts: Questions[], filter: FilterType) => posts.filter(post => !filter ? true : post.status === filter);
     const memoizedVisiblePosts = useMemo(() => visiblePosts(posts, filter), [posts, filter]);
 
     useEffect(() => {
         addAnimatedValues(posts.slice((page - 1) * DEFAULT_PAGE_SIZE, page * DEFAULT_PAGE_SIZE))
     }, [page]);
 
-    const addAnimatedValues = (newPosts: ImageClass[]) => {
+    const addAnimatedValues = (newPosts: Questions[]) => {
         newPosts.forEach(post => postsAnimatedValues[post.id!] = new Animated.Value(0));
         const newAnimations = newPosts.map((post) =>
             Animated.timing(postsAnimatedValues[post.id!], {
@@ -43,7 +43,7 @@ const PostList = forwardRef<FlatList<ImageClass>, Props>((props, fRef) => {
     const windowWidth = Dimensions.get('window').width;
 
     return (
-        <FlatList<ImageClass> ref={fRef} style={{ flex: 1, width: '100%' }} data={memoizedVisiblePosts}
+        <FlatList<Questions> ref={fRef} style={{ flex: 1, width: '100%' }} data={memoizedVisiblePosts}
             renderItem={({ item: post }) => {
                 console.log(post.id, ' -> ', postsAnimatedValues[post.id!])
                 return <Animated.View style={{
@@ -60,7 +60,7 @@ const PostList = forwardRef<FlatList<ImageClass>, Props>((props, fRef) => {
             }
             // initialScrollIndex={scrollIndex}
             removeClippedSubviews={false}
-            getItemLayout={(data: ImageClass[] | null | undefined, index: number) => (
+            getItemLayout={(_data: Questions[] | null | undefined, index: number) => (
                 { length: ITEM_HEIGHT, offset: ITEM_HEIGHT * index, index }
             )}
             ItemSeparatorComponent={() => <View style={{ width: "100%", height: .7, backgroundColor: 'rgba( 52,52,52,1)' }} />}

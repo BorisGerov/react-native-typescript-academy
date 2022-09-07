@@ -70,7 +70,7 @@ export class Form<Entity, FormConfig extends PropToComponentKindMapping<Entity>>
         Object.keys(this.state).forEach(field => {
             const prop = field as keyof Entity & string;
             if (typeof entity[prop] === 'string') {
-                entity[prop] = this.state[prop]?.value ?? '' as Entity[keyof Entity & string];
+                entity[prop] = this.state[prop]?.value ?? '' as unknown as Entity[keyof Entity & string];
             } else {
                 entity[prop] = this.state[prop]?.value ?? entity[prop];
             }

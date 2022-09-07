@@ -1,22 +1,24 @@
-import React, { Component } from "react";
-import { PostListener } from "../model/shared-types";
-import { ImageClass, PostStatus } from "../model/posts.model"
-import { Button, Image, ScrollView, StyleSheet, Text, View, } from "react-native";
+import React, { Component, useState } from "react";
+import { PostListener, StatusForQuestion } from "../model/shared-types";
+import {  Answer, Questions } from "../model/posts.model"
+import { Button, Image, ScrollView, StyleSheet, Text, View } from "react-native";
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import IconButton from "./IconButton";
+import CheckBox from "@react-native-community/checkbox";
 
 export const ITEM_HEIGHT = 400;
 export const ITEM_PADDING = 10;
+export const [isSelected, setSelection] = useState(false);
 
 export interface PostItemProps {
-    post: ImageClass;
+    post: Questions;
     onDelete: PostListener;
     onEdit: PostListener;
 }
 
 
 export interface PostItemListener {
-    (post: ImageClass, postItemComponent: Component<PostItemProps, {}>): void;
+    (post: Questions, postItemComponent: Component<PostItemProps, {}>): void;
 }
 
 export default class PostItem extends Component<PostItemProps, {}> {
@@ -26,18 +28,27 @@ export default class PostItem extends Component<PostItemProps, {}> {
             <View style={styles.itemContainer}>
                 <View style={styles.postItem}>
                     <View style={styles.postHeader}>
-                        <Image resizeMode='contain' style={styles.postImage} source={{ uri: post.image.uri }}></Image>
+                        <Image resizeMode='contain' style={styles.postImage} source={{ uri: post.pictureOfQuestion?.uri }}></Image>
                         <View style={styles.postContent} >
-                            <Text style={styles.title}>{post.title}</Text>
-                            <Text style={styles.postMetadata}>{PostStatus[post.status]},  Author Name: {post.authorName}</Text>
+                            <Text style={styles.title}>{post.status}</Text>
+                            <Text style={styles.postMetadata}>{StatusForQuestion[post.status]}</Text>
                             <View style={styles.postTags}>
-                                {post.tags.map(tag => <Text key={tag} style={styles.postTag}>{tag}</Text>)}
-                            </View><Text style={styles.postText}>{post.deadline}</Text>
+                                <View style={styles.checkboxContainer}>
+                                    <CheckBox
+                                    value={isSelected}
+                                    onValueChange={setSelection}
+                                    style={styles.checkbox}
+                                    />
+                                    <Text style={styles.postText}>{post.answers}</Text>
+                                </View>
+                            </View>
+                            <Text style={styles.postText}>{post.created}</Text>
+                            <Text style={styles.postText}>{post.modified}</Text>
                         </View>
                     </View>
 
                     <ScrollView style={styles.textScrollView} nestedScrollEnabled={true}>
-                        <Text style={styles.postText}>{post.description}</Text>
+                        <Text style={styles.postText}>{post.textOfQuestion}</Text>
                     </ScrollView>
                     <View>
                         
@@ -61,6 +72,16 @@ const styles = StyleSheet.create({
     itemContainer: {
         padding: ITEM_PADDING,
         height: ITEM_HEIGHT,
+        flex: 1,
+        alignItems: "center",
+        justifyContent: "center",
+    },
+    checkboxContainer: {
+        flexDirection: "row",
+        marginBottom: 20,
+    },
+    checkbox: {
+        alignSelf: "center",
     },
     postItem: {
         padding: 5,
