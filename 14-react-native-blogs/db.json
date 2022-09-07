@@ -25,7 +25,22 @@
       "id": 14
     }
   ],
-  "posts": [],
+  "posts": [
+    {
+      "id": 1,
+      "textOfQuestion": "Text",
+      "points": 10,
+      "answers": [
+        "React",
+        "React-native",
+        "NextJs"
+      ],
+      "pictureOfQuestion": "https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg",
+      "status": 1,
+      "created": "Mon 07 September",
+      "modified": "Mon 07 September"
+    }
+  ],
   "comments": [],
   "users": [
     {

@@ -8,7 +8,7 @@ import CheckBox from "@react-native-community/checkbox";
 
 export const ITEM_HEIGHT = 400;
 export const ITEM_PADDING = 10;
-export const [isSelected, setSelection] = useState(false);
+
 
 export interface PostItemProps {
     post: Questions;
@@ -34,11 +34,11 @@ export default class PostItem extends Component<PostItemProps, {}> {
                             <Text style={styles.postMetadata}>{StatusForQuestion[post.status]}</Text>
                             <View style={styles.postTags}>
                                 <View style={styles.checkboxContainer}>
-                                    <CheckBox
+                                    {/* <CheckBox
                                     value={isSelected}
                                     onValueChange={setSelection}
                                     style={styles.checkbox}
-                                    />
+                                    /> */}
                                     <Text style={styles.postText}>{post.answers}</Text>
                                 </View>
                             </View>

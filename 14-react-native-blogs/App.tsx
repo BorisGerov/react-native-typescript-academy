@@ -243,7 +243,7 @@ type PostFormPropToCompKindMapping = {
   id: 'FormReadonlyTextComponent';
   status: 'FormDropdownComponent';
   textOfQuestion: 'FormTextComponent';
-  points: 'FormReadonlyTextComponent';  
+  points: 'FormTextComponent';  
   answers: 'FormTextComponent';
   pictureOfQuestion?: 'FormImageComponent';
   created: 'FormTextComponent';
@@ -275,7 +275,7 @@ const postFormConfig: FormComponentConfigs<Questions, PostFormPropToCompKindMapp
   },
   points: {
     label: 'Points',
-    componentKind: 'FormReadonlyTextComponent'
+    componentKind: 'FormTextComponent'
   },
   answers: {
     label : 'Answers',
