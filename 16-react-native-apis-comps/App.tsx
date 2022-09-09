@@ -17,6 +17,7 @@ import LightBox from "./LightBox";
 import RefreshControlDemo from "./RefreshControl";
 import ScrollViewAnimatedHeader from "./ScrollViewAnimatedHeader";
 import Stagger from "./Stagger";
+import React from "react";
 const BASE_URL = 'http://localhost:19000';
 
 export const SAMPLE_IMAGES = [
